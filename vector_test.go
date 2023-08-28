@@ -19,7 +19,7 @@ var _ = Describe("Vector", func() {
 		w = wyvern.Vector{4, 5, 6}
 	})
 
-	Describe("Dot", func() {
+	Describe("DotProduct", func() {
 		It("computes the correct dot product", func() {
 			Expect(v.DotProduct(w)).To(Equal(32))
 		})
