@@ -12,7 +12,7 @@ var _ = Describe("Matrix", func() {
 		c  []wyvern.Vector
 	)
 
-	Describe("NewMatrix", func() {
+	Describe("Constructors", func() {
 		When("The vectors have the same numbers of components", func() {
 			BeforeEach(func() {
 				c = []wyvern.Vector{
@@ -22,14 +22,59 @@ var _ = Describe("Matrix", func() {
 				}
 			})
 
-			It("Returns a matrix", func() {
-				m, _ := wyvern.NewMatrix(c)
-				Expect(m.Vectors).To(HaveLen(3))
+			Describe("FromRows", func() {
+				It("Returns a non-empty matrix", func() {
+					m, _ := wyvern.FromRows(c)
+					Expect(m.Columns()).NotTo(BeNil())
+				})
+
+				It("Does not return an error", func() {
+					_, e := wyvern.FromRows(c)
+					Expect(e).NotTo(HaveOccurred())
+				})
+
+				It("Populates the matrix using the input vectors as rows", func() {
+					m, _ := wyvern.FromRows(c)
+					rows := m.Rows()
+					Expect(rows).NotTo(BeNil())
+					Expect(rows).To(Equal(c))
+
+					cols := m.Columns()
+					Expect(cols).NotTo(BeNil())
+					Expect(cols).To(Equal([]wyvern.Vector{
+						{1, 4, 10},
+						{2, 5, -12},
+						{3, 6, 37},
+					}))
+				})
 			})
 
-			It("Does not return an error", func() {
-				_, e := wyvern.NewMatrix(c)
-				Expect(e).NotTo(HaveOccurred())
+			Describe("FromColumns", func() {
+				It("Returns a matrix", func() {
+					m, _ := wyvern.FromColumns(c)
+					Expect(m.Columns()).NotTo(BeNil())
+				})
+
+				It("Does not return an error", func() {
+					_, e := wyvern.FromColumns(c)
+					Expect(e).NotTo(HaveOccurred())
+				})
+
+				It("Populates the matrix using the input vectors as rows", func() {
+					m, _ := wyvern.FromColumns(c)
+
+					cols := m.Columns()
+					Expect(cols).NotTo(BeNil())
+					Expect(cols).To(Equal(c))
+
+					rows := m.Rows()
+					Expect(rows).NotTo(BeNil())
+					Expect(rows).To(Equal([]wyvern.Vector{
+						{1, 4, 10},
+						{2, 5, -12},
+						{3, 6, 37},
+					}))
+				})
 			})
 		})
 
@@ -42,10 +87,20 @@ var _ = Describe("Matrix", func() {
 				}
 			})
 
-			It("Returns an empty Matrix and an error", func() {
-				m, e := wyvern.NewMatrix(c)
-				Expect(m).To(Equal(wyvern.Matrix{}))
-				Expect(e).To(HaveOccurred())
+			Describe("FromRows", func() {
+				It("Returns an empty Matrix and an error", func() {
+					m, e := wyvern.FromRows(c)
+					Expect(m).To(Equal(wyvern.Matrix{}))
+					Expect(e).To(HaveOccurred())
+				})
+			})
+
+			Describe("FromColumns", func() {
+				It("Returns an empty Matrix and an error", func() {
+					m, e := wyvern.FromColumns(c)
+					Expect(m).To(Equal(wyvern.Matrix{}))
+					Expect(e).To(HaveOccurred())
+				})
 			})
 		})
 	})
