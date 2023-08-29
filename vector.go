@@ -1,12 +1,17 @@
 package wyvern
 
-import "math"
+import (
+	"errors"
+	"math"
 
-type Vector []int
+	"golang.org/x/exp/constraints"
+)
 
-func (v Vector) DotProduct(w Vector) int {
+type Vector[N constraints.Float] []N
+
+func (v Vector[N]) DotProduct(w Vector[N]) N {
 	var (
-		dp int
+		dp N
 	)
 
 	for i, c := range v {
@@ -16,7 +21,7 @@ func (v Vector) DotProduct(w Vector) int {
 	return dp
 }
 
-func (v Vector) Magnitude() float64 {
+func (v Vector[N]) Magnitude() float64 {
 	var sumOfSquaredComponents float64
 	for _, c := range v {
 		sumOfSquaredComponents += float64(c * c)
@@ -25,10 +30,30 @@ func (v Vector) Magnitude() float64 {
 	return math.Sqrt(sumOfSquaredComponents)
 }
 
-func (v Vector) sameSpace(w Vector) bool {
+func (v Vector[N]) sameDimension(w Vector[N]) bool {
 	return len(v) == len(w)
 }
 
-func (v Vector) Angle(w Vector) float64 {
+func (v Vector[N]) Angle(w Vector[N]) float64 {
 	return math.Acos(float64(v.DotProduct(w)) / (v.Magnitude() * w.Magnitude()))
+}
+
+func (v Vector[N]) Multiply(f N) {
+	for idx, _ := range v {
+		v.multiplyComponent(idx, f)
+	}
+}
+
+func (v Vector[N]) MultiplyComponent(componentIndex int, f N) error {
+	if componentIndex < 0 || componentIndex >= len(v) {
+		return errors.New("Component index out of range for vector")
+	}
+
+	v.multiplyComponent(componentIndex, f)
+	return nil
+}
+
+func (v Vector[N]) multiplyComponent(componentIndex int, f N) {
+	prevVal := v[componentIndex]
+	v[componentIndex] = prevVal * f
 }

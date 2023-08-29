@@ -11,23 +11,23 @@ import (
 
 var _ = Describe("Vector", func() {
 	var (
-		v, w wyvern.Vector
+		v, w wyvern.Vector[float64]
 	)
 
 	BeforeEach(func() {
-		v = wyvern.Vector{1, 2, 3}
-		w = wyvern.Vector{4, 5, 6}
+		v = wyvern.Vector[float64]{1, 2, 3}
+		w = wyvern.Vector[float64]{4, 5, 6}
 	})
 
 	Describe("DotProduct", func() {
 		It("computes the correct dot product", func() {
-			Expect(v.DotProduct(w)).To(Equal(32))
+			Expect(v.DotProduct(w)).To(Equal(32.0))
 		})
 	})
 
 	Describe("Magnitude", func() {
 		BeforeEach(func() {
-			v = wyvern.Vector{3, 4}
+			v = wyvern.Vector[float64]{3, 4}
 		})
 
 		It("Returns the correct magnitude of the vector", func() {
@@ -37,8 +37,8 @@ var _ = Describe("Vector", func() {
 
 	Describe("Angle", func() {
 		BeforeEach(func() {
-			v = wyvern.Vector{1, 0}
-			w = wyvern.Vector{0, 1}
+			v = wyvern.Vector[float64]{1, 0}
+			w = wyvern.Vector[float64]{0, 1}
 		})
 
 		It("Returns the angle in radians between the two vectors", func() {
