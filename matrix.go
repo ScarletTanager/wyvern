@@ -82,6 +82,19 @@ func (a Matrix[N]) Columns() []Vector[N] {
 	return a.columns
 }
 
+func (a Matrix[N]) MultiplyRow(rowIndex int, factor N) error {
+	if rowIndex < 0 || rowIndex > len(a.Rows()) {
+		return errors.New("Row index out of range")
+	}
+
+	for _, col := range a.Columns() {
+		orig := col[rowIndex]
+		col[rowIndex] = orig * factor
+	}
+
+	return nil
+}
+
 // Product multiplies two matrices.  a is the matrix on the left, b on the right.
 // The matrix returned is a combination of the columns of a and of the rows of b.
 func (a Matrix[N]) Product(b Matrix[N]) Matrix[N] {

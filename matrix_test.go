@@ -23,7 +23,7 @@ var _ = Describe("Matrix", func() {
 			})
 
 			Describe("FromRows", func() {
-				It("Returns a non-empty matrix", func() {
+				It("Returns a non-nil matrix", func() {
 					m, _ := wyvern.FromRows(c)
 					Expect(m.Columns()).NotTo(BeNil())
 				})
@@ -137,6 +137,40 @@ var _ = Describe("Matrix", func() {
 
 		Describe("Product", func() {
 
+		})
+
+		Describe("MultiplyRow", func() {
+			var (
+				rowIndex     int
+				originalRows []wyvern.Vector[float64]
+			)
+
+			BeforeEach(func() {
+				rowIndex = 1
+			})
+
+			JustBeforeEach(func() {
+				originalRows = mt.Rows()
+			})
+
+			It("Multiplies the specified row by the specified factor", func() {
+				Expect(originalRows[rowIndex]).To(Equal(wyvern.Vector[float64]{4, 5, 10}))
+				mt.MultiplyRow(rowIndex, 3.0)
+				originalRows[rowIndex].Multiply(3.0)
+				Expect(mt.Rows()[rowIndex]).To(Equal(originalRows[rowIndex]))
+			})
+
+			When("The specified row index is not valid for the matrix", func() {
+				BeforeEach(func() {
+					rowIndex = 5
+				})
+
+				It("Returns an error and does not modify the matrix", func() {
+					e := mt.MultiplyRow(rowIndex, 3.0)
+					Expect(e).To(HaveOccurred())
+					Expect(mt.Rows()).To(Equal(originalRows))
+				})
+			})
 		})
 	})
 })

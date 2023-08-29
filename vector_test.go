@@ -45,4 +45,30 @@ var _ = Describe("Vector", func() {
 			Expect(v.Angle(w)).To(Equal(math.Pi / 2))
 		})
 	})
+
+	Describe("MultiplyComponent", func() {
+		BeforeEach(func() {
+			v = wyvern.Vector[float64]{3, 4}
+			w = wyvern.Vector[float64]{3, 12}
+			Expect(v).NotTo(Equal(w))
+		})
+
+		It("Multiples the specified component by the specified factor", func() {
+			v.MultiplyComponent(1, 3.0)
+			Expect(v).To(Equal(w))
+		})
+	})
+
+	Describe("Multiply", func() {
+		BeforeEach(func() {
+			v = wyvern.Vector[float64]{3, 4}
+			w = wyvern.Vector[float64]{9, 12}
+			Expect(v).NotTo(Equal(w))
+		})
+
+		It("Multiples all components of the vector by the specified factor", func() {
+			v.Multiply(3.0)
+			Expect(v).To(Equal(w))
+		})
+	})
 })
