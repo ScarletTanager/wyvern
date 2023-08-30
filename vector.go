@@ -38,10 +38,14 @@ func (v Vector[N]) Angle(w Vector[N]) float64 {
 	return math.Acos(float64(v.DotProduct(w)) / (v.Magnitude() * w.Magnitude()))
 }
 
-func (v Vector[N]) Multiply(f N) {
+// Multiply multiplies each component of the vector by the specified factor.  It
+// returns the vector.
+func (v Vector[N]) Multiply(f N) Vector[N] {
 	for idx, _ := range v {
 		v.multiplyComponent(idx, f)
 	}
+
+	return v
 }
 
 func (v Vector[N]) MultiplyComponent(componentIndex int, f N) error {

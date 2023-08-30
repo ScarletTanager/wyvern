@@ -120,18 +120,32 @@ var _ = Describe("Matrix", func() {
 		})
 
 		Describe("Columns", func() {
-			It("Returns the set of column vectors", func() {
-				Expect(mt.Columns()).To(Equal(c))
+			It("Returns a copy of the column vectors", func() {
+				colsBefore := mt.Columns()
+				Expect(colsBefore).To(Equal(c))
+				colsBefore[0].Multiply(2.0)
+				colsAfter := mt.Columns()
+				Expect(colsAfter).To(Equal(c))
+				Expect(colsBefore).NotTo(Equal(colsAfter))
 			})
 		})
 
 		Describe("Rows", func() {
-			It("Returns the set of row vectors", func() {
-				Expect(mt.Rows()).To(Equal([]wyvern.Vector[float64]{
+			It("Returns a copy of the set of row vectors", func() {
+				rowsBefore := mt.Rows()
+				Expect(rowsBefore).To(Equal([]wyvern.Vector[float64]{
 					{1, 2, 13},
 					{4, 5, 10},
 					{9, 7, -4},
 				}))
+				rowsBefore[0].Multiply(5.0)
+				rowsAfter := mt.Rows()
+				Expect(rowsAfter).To(Equal([]wyvern.Vector[float64]{
+					{1, 2, 13},
+					{4, 5, 10},
+					{9, 7, -4},
+				}))
+				Expect(rowsBefore).NotTo(Equal(rowsAfter))
 			})
 		})
 
@@ -154,10 +168,10 @@ var _ = Describe("Matrix", func() {
 			})
 
 			It("Multiplies the specified row by the specified factor", func() {
-				Expect(originalRows[rowIndex]).To(Equal(wyvern.Vector[float64]{4, 5, 10}))
+				Expect(mt.Rows()).To(Equal(originalRows))
 				mt.MultiplyRow(rowIndex, 3.0)
-				originalRows[rowIndex].Multiply(3.0)
-				Expect(mt.Rows()[rowIndex]).To(Equal(originalRows[rowIndex]))
+				Expect(mt.Rows()).NotTo(Equal(originalRows))
+				Expect(mt.Rows()[rowIndex]).To(Equal(originalRows[rowIndex].Multiply(3.0)))
 			})
 
 			When("The specified row index is not valid for the matrix", func() {
@@ -169,6 +183,42 @@ var _ = Describe("Matrix", func() {
 					e := mt.MultiplyRow(rowIndex, 3.0)
 					Expect(e).To(HaveOccurred())
 					Expect(mt.Rows()).To(Equal(originalRows))
+				})
+			})
+		})
+
+		Describe("MultiplyColumn", func() {
+			var (
+				columnIndex     int
+				originalColumns []wyvern.Vector[float64]
+				factor          float64
+			)
+
+			BeforeEach(func() {
+				columnIndex = 2
+				factor = 4.0
+			})
+
+			JustBeforeEach(func() {
+				originalColumns = mt.Columns()
+			})
+
+			It("Multiplies the specified column by the specified factor", func() {
+				Expect(mt.Columns()[columnIndex]).To(Equal(originalColumns[columnIndex]))
+				mt.MultiplyColumn(columnIndex, factor)
+				Expect(mt.Columns()[columnIndex]).NotTo(Equal(originalColumns[columnIndex]))
+				Expect(mt.Columns()[columnIndex]).To(Equal(originalColumns[columnIndex].Multiply(factor)))
+			})
+
+			When("The specified column index is not valid for the matrix", func() {
+				BeforeEach(func() {
+					columnIndex = 7
+				})
+
+				It("Returns an error and does not modify the matrix", func() {
+					e := mt.MultiplyColumn(columnIndex, factor)
+					Expect(e).To(HaveOccurred())
+					Expect(mt.Columns()).To(Equal(originalColumns))
 				})
 			})
 		})

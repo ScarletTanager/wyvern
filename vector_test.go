@@ -70,5 +70,10 @@ var _ = Describe("Vector", func() {
 			v.Multiply(3.0)
 			Expect(v).To(Equal(w))
 		})
+
+		It("Returns the updated vector", func() {
+			updated := v.Multiply(3.0)
+			Expect(updated).To(Equal(w))
+		})
 	})
 })

@@ -57,7 +57,9 @@ func FromColumns[N constraints.Float](c []Vector[N]) (Matrix[N], error) {
 	return Matrix[N]{}, errors.New("Vectors have different numbers of components")
 }
 
-// Rows returns the set of row vectors, top to bottom, constituting the Matrix
+// Rows returns the set of row vectors, top to bottom, constituting the Matrix.
+// Both Rows() and Columns() return **copies** of the component vectors - modifying
+// the returned slice does not affect the original Matrix.
 func (a Matrix[N]) Rows() []Vector[N] {
 	cols := a.Columns()
 
@@ -77,17 +79,28 @@ func (a Matrix[N]) Rows() []Vector[N] {
 	return rows
 }
 
-// Columns returns the set of column vectors, left to right, consistituting the Matrix
+// Columns returns the set of column vectors, left to right, consistituting the Matrix.
+// Both Rows() and Columns() return **copies** of the component vectors - modifying
+// the returned slice does not affect the original Matrix.
 func (a Matrix[N]) Columns() []Vector[N] {
-	return a.columns
+	cols := make([]Vector[N], len(a.columns))
+	for ci, c := range a.columns {
+		cols[ci] = make(Vector[N], len(c))
+		for compIdx, val := range c {
+			cols[ci][compIdx] = val
+		}
+	}
+	return cols
 }
 
+// MultiplyRow multiplies the specified row by the given factor.
+// Returns an error if the row index is out of range.
 func (a Matrix[N]) MultiplyRow(rowIndex int, factor N) error {
 	if rowIndex < 0 || rowIndex > len(a.Rows()) {
 		return errors.New("Row index out of range")
 	}
 
-	for _, col := range a.Columns() {
+	for _, col := range a.columns {
 		orig := col[rowIndex]
 		col[rowIndex] = orig * factor
 	}
@@ -95,10 +108,21 @@ func (a Matrix[N]) MultiplyRow(rowIndex int, factor N) error {
 	return nil
 }
 
+// MultiplyColumn multiplies the specified column by the given factor.
+// Returns an error if the colun index is out of range.
+func (a Matrix[N]) MultiplyColumn(columnIndex int, factor N) error {
+	if columnIndex < 0 || columnIndex > len(a.columns) {
+		return errors.New("Row index out of range")
+	}
+	a.columns[columnIndex].Multiply(factor)
+	return nil
+}
+
 // Product multiplies two matrices.  a is the matrix on the left, b on the right.
 // The matrix returned is a combination of the columns of a and of the rows of b.
-func (a Matrix[N]) Product(b Matrix[N]) Matrix[N] {
-	return Matrix[N]{}
+// Not yet implemented
+func (a Matrix[N]) Product(b Matrix[N]) (Matrix[N], error) {
+	return Matrix[N]{}, nil
 }
 
 func canBeMultiplied[N constraints.Float](a, b Matrix[N]) bool {
