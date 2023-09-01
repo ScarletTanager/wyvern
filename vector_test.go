@@ -76,4 +76,32 @@ var _ = Describe("Vector", func() {
 			Expect(updated).To(Equal(w))
 		})
 	})
+
+	Describe("Difference", func() {
+		BeforeEach(func() {
+			v = wyvern.Vector[float64]{12, 8, 3}
+			w = wyvern.Vector[float64]{5, 3, -2}
+		})
+
+		It("Returns the difference of the two vectors", func() {
+			d := v.Difference(w)
+			Expect(d).To(Equal(wyvern.Vector[float64]{7, 5, 5}))
+		})
+
+		It("Leaves the original vector unchanged", func() {
+			v.Difference(w)
+			Expect(v).To(Equal(wyvern.Vector[float64]{12, 8, 3}))
+		})
+
+		When("The vector to be subtracted has a lesser dimension than the starting vector", func() {
+			BeforeEach(func() {
+				w = wyvern.Vector[float64]{5, 3}
+			})
+
+			It("Returns the difference as if the vector to be subtracted had zeros for the missing components", func() {
+				d := v.Difference(w)
+				Expect(d).To(Equal(wyvern.Vector[float64]{7, 5, 3}))
+			})
+		})
+	})
 })

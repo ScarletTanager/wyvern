@@ -150,7 +150,7 @@ func (a Matrix[N]) ReplaceColumn(columnIndex int, src Vector[N]) error {
 		return errors.New("Column index out of bounds")
 	}
 
-	if !src.sameDimension(a.columns[[0]]) {
+	if !src.sameDimension(a.columns[0]) {
 		return errors.New("Vector has wrong dimension")
 	}
 

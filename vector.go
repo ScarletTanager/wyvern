@@ -48,6 +48,24 @@ func (v Vector[N]) Multiply(f N) Vector[N] {
 	return v
 }
 
+// Difference returns (v-other) as a new Vector - it does not modify the original Vector.
+// If other has fewer dimensions than v, then the components of other are subtracted
+// from the corresponding first n components of v, where n is the dimension of other.
+// The remaining components are left unchanged (as if other had 0 values for those components).
+func (v Vector[N]) Difference(other Vector[N]) Vector[N] {
+	d := make(Vector[N], len(v))
+
+	for ci, orig := range v {
+		if ci < len(other) {
+			d[ci] = orig - other[ci]
+		} else {
+			d[ci] = orig
+		}
+	}
+
+	return d
+}
+
 func (v Vector[N]) MultiplyComponent(componentIndex int, f N) error {
 	if componentIndex < 0 || componentIndex >= len(v) {
 		return errors.New("Component index out of range for vector")
